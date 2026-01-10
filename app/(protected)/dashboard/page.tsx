@@ -1,15 +1,47 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 
 export default function DashboardPage() {
+    const router = useRouter();
+    const [stats, setStats] = useState<any>(null);
+    const [loadingStats, setLoadingStats] = useState(true);
+    const [user, setUser] = useState<any>(null);
+
+    // Analyzer State
     const [workflowText, setWorkflowText] = useState("");
     const [analysisResult, setAnalysisResult] = useState<any>(null);
-    const [loading, setLoading] = useState(false);
+    const [analyzing, setAnalyzing] = useState(false);
+
+    useEffect(() => {
+        const storedUser = localStorage.getItem("user");
+        if (!storedUser) {
+            router.push("/login");
+            return;
+        }
+        const userData = JSON.parse(storedUser);
+        setUser(userData);
+        fetchStats(userData.companyId);
+    }, [router]);
+
+    const fetchStats = async (companyId: string) => {
+        try {
+            const res = await fetch(`/api/dashboard/stats?companyId=${companyId}`);
+            const data = await res.json();
+            if (data.success) {
+                setStats(data.stats);
+            }
+        } catch (error) {
+            console.error(error);
+        } finally {
+            setLoadingStats(false);
+        }
+    };
 
     const handleAnalyze = async () => {
         if (!workflowText) return;
-        setLoading(true);
+        setAnalyzing(true);
         try {
             const response = await fetch("/api/agents/workflow", {
                 method: "POST",
@@ -21,33 +53,43 @@ export default function DashboardPage() {
         } catch (e) {
             console.error("Analysis failed", e);
         } finally {
-            setLoading(false);
+            setAnalyzing(false);
         }
     };
+
+    if (loadingStats) return <div className="p-8">Loading dashboard...</div>;
 
     return (
         <div className="p-8 max-w-7xl mx-auto space-y-8">
             <div>
                 <h1 className="text-3xl font-bold tracking-tight">Dashboard</h1>
-                <p className="text-zinc-500 dark:text-zinc-400">Overview of your industrial waste management.</p>
+                <p className="text-zinc-500 dark:text-zinc-400">Welcome back, {user?.name}. Overview of your circular economy impact.</p>
             </div>
 
-            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+            {/* AI Insight Banner */}
+            {stats?.insight && (
+                <div className="bg-white dark:bg-zinc-900 border border-amber-200 dark:border-amber-900/50 p-6 rounded-xl shadow-sm flex items-start gap-4">
+                    <span className="text-3xl">✨</span>
+                    <div>
+                        <h3 className="font-bold text-lg mb-1 text-zinc-900 dark:text-zinc-100">Daily AI Insight</h3>
+                        <p className="text-zinc-600 dark:text-zinc-400">{stats.insight}</p>
+                    </div>
+                </div>
+            )}
+
+            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
                 {[
-                    { title: "Waste Generated", value: "1,240 kg", change: "+12%", bg: "bg-orange-100 dark:bg-orange-900/20 text-orange-600" },
-                    { title: "Revenue from Sales", value: "$4,200", change: "+8%", bg: "bg-green-100 dark:bg-green-900/20 text-green-600" },
-                    { title: "CO2 Offset", value: "850 kg", change: "+24%", bg: "bg-blue-100 dark:bg-blue-900/20 text-blue-600" },
-                    { title: "Active Listings", value: "12", change: "0%", bg: "bg-purple-100 dark:bg-purple-900/20 text-purple-600" },
+                    { title: "Waste Streams Identified", value: stats?.wasteCount || 0, icon: "🗑️", bg: "bg-orange-100 dark:bg-orange-900/20 text-orange-600" },
+                    { title: "Revenue from Waste", value: `$${stats?.revenue?.toLocaleString() || 0}`, icon: "💰", bg: "bg-green-100 dark:bg-green-900/20 text-green-600" },
+                    { title: "Active Listings", value: stats?.activeListings || 0, icon: "📦", bg: "bg-purple-100 dark:bg-purple-900/20 text-purple-600" },
                 ].map((stat, i) => (
-                    <div key={i} className="rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 p-6 shadow-sm">
-                        <div className={`w-fit rounded-lg p-2 ${stat.bg} mb-4`}>
-                            {/* Icon placeholder */}
-                            <div className="w-5 h-5 rounded-full bg-current opacity-50"></div>
+                    <div key={i} className="rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 p-6 shadow-sm flex items-center gap-4">
+                        <div className={`p-3 rounded-full ${stat.bg} text-2xl`}>
+                            {stat.icon}
                         </div>
-                        <p className="text-sm font-medium text-zinc-500 dark:text-zinc-400">{stat.title}</p>
-                        <div className="flex items-baseline gap-2">
+                        <div>
+                            <p className="text-sm font-medium text-zinc-500 dark:text-zinc-400">{stat.title}</p>
                             <h3 className="text-2xl font-bold">{stat.value}</h3>
-                            <span className="text-xs font-medium text-green-500">{stat.change}</span>
                         </div>
                     </div>
                 ))}
@@ -70,10 +112,10 @@ export default function DashboardPage() {
 
                     <button
                         onClick={handleAnalyze}
-                        disabled={loading || !workflowText}
+                        disabled={analyzing || !workflowText}
                         className="mt-4 w-full rounded-lg bg-green-600 px-4 py-2 text-white font-medium hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                     >
-                        {loading ? "Analyzing..." : "Analyze Workflow"}
+                        {analyzing ? "Analyzing..." : "Analyze Workflow"}
                     </button>
 
                     {analysisResult && (
@@ -108,25 +150,27 @@ export default function DashboardPage() {
                     )}
                 </div>
 
-                {/* Recent Activity Mock */}
+                {/* Recent Activity */}
                 <div className="rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 p-6 shadow-sm">
                     <div className="mb-6">
                         <h2 className="text-lg font-semibold">Recent Activity</h2>
                     </div>
                     <div className="space-y-4">
-                        {[
-                            { text: "Sold 500kg of Scrap Metal to EcoBuild", time: "2h ago", type: "sale" },
-                            { text: "New match found for Plastic Waste", time: "5h ago", type: "alert" },
-                            { text: "Updated workflow: Assembly Line A", time: "1d ago", type: "update" },
-                        ].map((activity, i) => (
-                            <div key={i} className="flex items-start gap-4 pb-4 border-b border-zinc-100 dark:border-zinc-900 last:border-0">
-                                <div className={`w-2 h-2 mt-2 rounded-full ${activity.type === 'sale' ? 'bg-green-500' : 'bg-blue-500'}`} />
-                                <div>
-                                    <p className="text-sm font-medium">{activity.text}</p>
-                                    <p className="text-xs text-zinc-500">{activity.time}</p>
+                        {stats?.activities && stats.activities.length > 0 ? (
+                            stats.activities.map((activity: any, i: number) => (
+                                <div key={i} className="flex items-start gap-4 pb-4 border-b border-zinc-100 dark:border-zinc-900 last:border-0">
+                                    <div className={`w-2 h-2 mt-2 rounded-full flex-shrink-0 ${activity.type === 'sale' ? 'bg-green-500' :
+                                        activity.type === 'purchase' ? 'bg-blue-500' : 'bg-orange-500'
+                                        }`} />
+                                    <div>
+                                        <p className="text-sm font-medium text-zinc-800 dark:text-zinc-200">{activity.text}</p>
+                                        <p className="text-xs text-zinc-500">{new Date(activity.created_at).toLocaleDateString()} {new Date(activity.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</p>
+                                    </div>
                                 </div>
-                            </div>
-                        ))}
+                            ))
+                        ) : (
+                            <p className="text-sm text-zinc-500 text-center py-8">No recent activity found.</p>
+                        )}
                     </div>
                 </div>
             </div>
