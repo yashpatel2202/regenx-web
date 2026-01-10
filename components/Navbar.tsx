@@ -6,6 +6,7 @@ import { usePathname } from "next/navigation";
 
 // Inline SVG icons to avoid dependency issues
 const Icons = {
+    // ... other icons
     LayoutDashboard: () => (
         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect width="7" height="9" x="3" y="3" /><rect width="7" height="5" x="14" y="3" /><rect width="7" height="9" x="14" y="12" /><rect width="7" height="5" x="3" y="16" /></svg>
     ),
@@ -17,21 +18,20 @@ const Icons = {
     ),
     Recycle: () => (
         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M7 19H4.815a1.83 1.83 0 0 1-1.57-.881 1.785 1.785 0 0 1-.004-1.784l1.326-2.296 1.503 2.518-1.471 2.45Z" /><path d="M21.179 16.216A1.83 1.83 0 0 1 19.5 19h-2.146l2.126-3.681-1.429-2.474-1.492 2.583L21.179 16.216Z" /><path d="M11.951 4.5 13.5 7.182 11.235 11.1l-2.036-3.525-1.42 2.46h2.802L8.5 6.918l3.451-2.418Z" /><path d="m11.951 4.5 2.121 3.673-1.429 2.474-1.492-2.583L7.75 4.5h4.201Z" /><path d="M19.5 4.5H17.2l-2.12 3.67 1.45 2.49 2.1-3.64 2.87-4.96c.78-1.35.32-3.08-1.03-3.08h-6.02L19.5 4.5Z" /><path d="M16.5 10a1 1 0 1 0 0-2 1 1 0 0 0 0 2Z" /><path d="M4.64 12.07l-2.88 4.96C.93 18.5 2.12 20.5 3.82 20.5h16.36l-2.12-3.68h-9V9H7v7.57l-2.36-4.5Z" /></svg>
+    ),
+    ClipboardList: () => (
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect width="8" height="4" x="8" y="2" rx="1" ry="1" /><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2" /><path d="M12 11h4" /><path d="M12 16h4" /><path d="M8 11h.01" /><path d="M8 16h.01" /></svg>
     )
-}; // Simplified Recycle for stability
-// Correcting Recycle icon to standard
-const RecycleIcon = () => (
-    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M7 19H4.815a1.83 1.83 0 0 1-1.57-.881 1.785 1.785 0 0 1-.004-1.784l1.326-2.296 1.503 2.518-1.471 2.45Z" /><path d="M21.179 16.216A1.83 1.83 0 0 1 19.5 19h-2.146l2.126-3.681-1.429-2.474-1.492 2.583L21.179 16.216Z" /><path d="M11.951 4.5 13.5 7.182 11.235 11.1l-2.036-3.525-1.42 2.46h2.802L8.5 6.918l3.451-2.418Z" /><path d="m11.951 4.5 2.121 3.673-1.429 2.474-1.492-2.583L7.75 4.5h4.201Z" /></svg>
-);
-// Actually using the simple LUCIDE one by pasting path
-const CheckIcon = () => <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12" /></svg>
+};
 
 export default function Navbar() {
     const pathname = usePathname();
 
     const navItems = [
         { name: "Dashboard", href: "/dashboard", icon: Icons.LayoutDashboard },
+        { name: "Products", href: "/dashboard/products", icon: Icons.Recycle },
         { name: "Marketplace", href: "/marketplace", icon: Icons.ShoppingBag },
+        { name: "Orders", href: "/orders", icon: Icons.ClipboardList },
         { name: "Feed", href: "/feed", icon: Icons.Newspaper },
     ];
 
@@ -58,6 +58,15 @@ export default function Navbar() {
                     })}
                 </nav>
                 <div className="ml-auto flex items-center gap-4">
+                    <button
+                        onClick={() => {
+                            localStorage.removeItem("user");
+                            window.location.href = "/login";
+                        }}
+                        className="text-sm text-zinc-500 hover:text-red-500 transition"
+                    >
+                        Sign Out
+                    </button>
                     <div className="h-8 w-8 rounded-full bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center">
                         <span className="text-xs font-medium">CO</span>
                     </div>

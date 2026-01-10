@@ -1,10 +1,12 @@
 "use client";
 
-import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useState, useEffect } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 
 export default function CreateListingPage() {
     const router = useRouter();
+    const searchParams = useSearchParams();
+
     const [formData, setFormData] = useState({
         title: "",
         type: "Metal",
@@ -13,20 +15,51 @@ export default function CreateListingPage() {
         price: "",
         description: "",
     });
+
+    useEffect(() => {
+        if (searchParams) {
+            setFormData(prev => ({
+                ...prev,
+                title: searchParams.get('name') || "",
+                description: searchParams.get('wasteId') ? "Generated from Waste Stream catalog." : ""
+            }));
+        }
+    }, [searchParams]);
     const [loading, setLoading] = useState(false);
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setLoading(true);
 
-        // In a real implementation, POST to /api/listings
-        // Mocking success for now
-        console.log("Creating Listing:", formData);
-
-        setTimeout(() => {
+        const storedUser = localStorage.getItem("user");
+        if (!storedUser) {
+            alert("You must be logged in to post a listing.");
             setLoading(false);
-            router.push("/marketplace");
-        }, 1000);
+            return;
+        }
+        const user = JSON.parse(storedUser);
+
+        try {
+            const res = await fetch("/api/listings", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    companyId: user.companyId,
+                    ...formData
+                }),
+            });
+            const data = await res.json();
+            if (data.success) {
+                router.push("/marketplace");
+            } else {
+                alert("Failed to create listing: " + (data.error || "Unknown error"));
+            }
+        } catch (err) {
+            console.error(err);
+            alert("An error occurred.");
+        } finally {
+            setLoading(false);
+        }
     };
 
     return (
@@ -65,7 +98,7 @@ export default function CreateListingPage() {
                             </select>
                         </div>
                         <div>
-                            <label className="block text-sm font-medium mb-1">Price Per Unit ($)</label>
+                            <label className="block text-sm font-medium mb-1">Price Per Unit (₹)</label>
                             <input
                                 type="number" required
                                 className="w-full p-2 rounded-lg border border-zinc-200 dark:border-zinc-800 bg-transparent"
