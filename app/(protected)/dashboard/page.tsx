@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
+import { Trash2, IndianRupee, Package } from "lucide-react";
 
 export default function DashboardPage() {
     const router = useRouter();
@@ -101,12 +102,12 @@ export default function DashboardPage() {
 
             <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
                 {[
-                    { title: "Waste Streams Identified", value: stats?.wasteCount || 0, icon: "🗑️", bg: "bg-orange-100 dark:bg-orange-900/20 text-orange-600" },
-                    { title: "Revenue from Waste", value: `₹${stats?.revenue?.toLocaleString() || 0}`, icon: "💰", bg: "bg-green-100 dark:bg-green-900/20 text-green-600" },
-                    { title: "Active Listings", value: stats?.activeListings || 0, icon: "📦", bg: "bg-purple-100 dark:bg-purple-900/20 text-purple-600" },
+                    { title: "Waste Streams Identified", value: stats?.wasteCount || 0, icon: <Trash2 className="w-6 h-6" />, bg: "bg-orange-100 dark:bg-orange-900/20 text-orange-600" },
+                    { title: "Revenue from Waste", value: `₹${stats?.revenue?.toLocaleString() || 0}`, icon: <IndianRupee className="w-6 h-6" />, bg: "bg-green-100 dark:bg-green-900/20 text-green-600" },
+                    { title: "Active Listings", value: stats?.activeListings || 0, icon: <Package className="w-6 h-6" />, bg: "bg-purple-100 dark:bg-purple-900/20 text-purple-600" },
                 ].map((stat, i) => (
                     <div key={i} className="rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 p-6 shadow-sm flex items-center gap-4">
-                        <div className={`p-3 rounded-full ${stat.bg} text-2xl`}>
+                        <div className={`p-3 rounded-full ${stat.bg}`}>
                             {stat.icon}
                         </div>
                         <div>

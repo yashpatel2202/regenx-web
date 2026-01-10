@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useParams, useRouter } from "next/navigation";
+import { Zap, Recycle, TrendingDown, Trash2 } from "lucide-react";
 
 export default function ProductDetailPage() {
     const params = useParams();
@@ -171,7 +172,7 @@ export default function ProductDetailPage() {
                 {product.components && product.components.length > 0 && (
                     <div className="mb-8 p-6 bg-amber-50/50 dark:bg-amber-900/10 border border-amber-200 dark:border-amber-800 rounded-lg">
                         <h3 className="font-bold text-amber-800 dark:text-amber-500 mb-4 flex items-center gap-2">
-                            ⚡ Supply Chain Optimization (Marketplace Available)
+                            <Zap className="w-5 h-5" /> Supply Chain Optimization (Marketplace Available)
                         </h3>
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
                             {product.components.map((comp: any) => {
@@ -254,7 +255,7 @@ export default function ProductDetailPage() {
                                     <div className="bg-white dark:bg-zinc-900 rounded-xl p-6 border border-green-200 dark:border-green-900 shadow-md">
                                         <div className="flex justify-between items-start mb-4">
                                             <div className="flex items-center gap-2">
-                                                <span className="text-2xl">♻️</span>
+                                                <Recycle className="w-6 h-6 text-green-600" />
                                                 <h4 className="text-lg font-bold text-green-700">Sustainable Workflow Proposal</h4>
                                             </div>
                                             <button
@@ -270,7 +271,7 @@ export default function ProductDetailPage() {
                                         </div>
 
                                         <div className="bg-green-50 dark:bg-green-900/20 p-4 rounded-lg border border-green-100 dark:border-green-900/50 flex gap-4 items-center">
-                                            <div className="bg-green-100 text-green-800 p-2 rounded-full">📉</div>
+                                            <div className="bg-green-100 text-green-800 p-2 rounded-full"><TrendingDown className="w-5 h-5" /></div>
                                             <div>
                                                 <div className="text-xs uppercase tracking-wider font-bold text-green-800">Projected Impact</div>
                                                 <div className="font-medium text-green-900 dark:text-green-100">{optimizationResult.sustainabilityImpact}</div>
@@ -284,7 +285,7 @@ export default function ProductDetailPage() {
                 )}
 
                 <h3 className="text-xl font-bold mb-6 flex items-center gap-2">
-                    <span>🗑️</span> Waste Output Catalog
+                    <Trash2 className="w-6 h-6 text-zinc-400" /> Waste Output Catalog
                 </h3>
 
                 {loadingWaste ? (

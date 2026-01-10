@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useParams, useRouter } from "next/navigation";
+import { BrainCircuit, Zap } from "lucide-react";
 
 export default function FeedDetailPage() {
     const params = useParams();
@@ -108,7 +109,7 @@ export default function FeedDetailPage() {
                 {/* Proposed Solutions */}
                 <div className="bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-xl p-8 shadow-sm">
                     <div className="flex items-center gap-3 mb-6">
-                        <span className="text-2xl">🧠</span>
+                        <BrainCircuit className="w-8 h-8 text-zinc-400" />
                         <h2 className="text-xl font-bold">Strategic Considerations</h2>
                     </div>
                     <div className="grid gap-4">
@@ -127,7 +128,7 @@ export default function FeedDetailPage() {
                 {analysis?.matches && analysis.matches.length > 0 ? (
                     <div className="bg-green-50 dark:bg-green-900/10 border border-green-200 dark:border-green-900/30 rounded-xl p-8 shadow-sm">
                         <div className="flex items-center gap-3 mb-6">
-                            <span className="text-2xl">⚡</span>
+                            <Zap className="w-8 h-8 text-green-600" />
                             <div>
                                 <h2 className="text-xl font-bold text-green-900 dark:text-green-100">Your Opportunity Matches</h2>
                                 <p className="text-green-700/80 dark:text-green-400 text-sm">We found specific relevance to your waste streams.</p>
