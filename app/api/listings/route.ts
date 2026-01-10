@@ -1,0 +1,60 @@
+import { NextResponse } from 'next/server';
+import pool from '@/lib/db';
+
+export async function GET() {
+    try {
+        const result = await pool.query(`
+      SELECT l.id, l.title, l.quantity, l.unit, l.price_per_unit, l.type, c.name as seller_name 
+      FROM listings l
+      JOIN companies c ON l.company_id = c.id
+      WHERE l.status = 'ACTIVE'
+      ORDER BY l.created_at DESC
+    `);
+
+        const formattedListings = result.rows.map(l => ({
+            id: l.id,
+            title: l.title,
+            quantity: `${l.quantity} ${l.unit}`,
+            price: `$${l.price_per_unit}/${l.unit}`, // map snake_case from DB
+            seller: l.seller_name,
+            type: l.type,
+        }));
+
+        return NextResponse.json({ success: true, listings: formattedListings });
+    } catch (error) {
+        console.error("Listings GET Error:", error);
+        return NextResponse.json({ success: false, error: "Failed to fetch listings" }, { status: 500 });
+    }
+}
+
+export async function POST(request: Request) {
+    try {
+        const body = await request.json();
+
+        // Mock company ID (select first available company)
+        const companyRes = await pool.query('SELECT id FROM companies LIMIT 1');
+        if (companyRes.rows.length === 0) {
+            return NextResponse.json({ success: false, error: "No company found to link listing" }, { status: 400 });
+        }
+        const companyId = companyRes.rows[0].id;
+
+        const result = await pool.query(`
+            INSERT INTO listings (company_id, title, description, quantity, unit, type, price_per_unit, status)
+            VALUES ($1, $2, $3, $4, $5, $6, $7, 'ACTIVE')
+            RETURNING *
+        `, [
+            companyId,
+            body.title,
+            body.description,
+            parseFloat(body.quantity),
+            body.unit,
+            body.type,
+            parseFloat(body.price)
+        ]);
+
+        return NextResponse.json({ success: true, listing: result.rows[0] });
+    } catch (error) {
+        console.error("Create Listing Error", error);
+        return NextResponse.json({ success: false, error: "Failed to create listing" }, { status: 500 });
+    }
+}
