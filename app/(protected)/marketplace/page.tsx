@@ -9,8 +9,13 @@ export default function MarketplacePage() {
 
     // Mock initial listings
     const [listings, setListings] = useState<any[]>([]);
+    const [currentUser, setCurrentUser] = useState<any>(null);
 
     useEffect(() => {
+        // Load user from storage
+        const stored = localStorage.getItem("user");
+        if (stored) setCurrentUser(JSON.parse(stored));
+
         fetch("/api/listings")
             .then(res => res.json())
             .then(data => {
@@ -31,6 +36,43 @@ export default function MarketplacePage() {
             console.error("Matchmaking failed", e);
         } finally {
             setLoading(false);
+        }
+    };
+
+    const handleBuy = async (item: any) => {
+        const storedUser = localStorage.getItem("user");
+        if (!storedUser) {
+            alert("Please login to purchase");
+            return;
+        }
+        const user = JSON.parse(storedUser);
+
+        // Simple confirmation
+        const total = item.raw_quantity * item.raw_price;
+        if (!confirm(`Are you sure you want to place an order for ${item.title}?\n\nQuantity: ${item.quantity}\nEstimated Total: $${total.toLocaleString()}`)) {
+            return;
+        }
+
+        try {
+            const res = await fetch("/api/orders", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    listingId: item.id,
+                    buyerCompanyId: user.companyId,
+                    quantity: item.raw_quantity,
+                    totalPrice: total
+                }),
+            });
+            const data = await res.json();
+            if (data.success) {
+                alert("Order placed successfully! Check 'Orders' page for status.");
+            } else {
+                alert("Failed to place order: " + data.error);
+            }
+        } catch (err) {
+            console.error(err);
+            alert("Error placing order");
         }
     };
 
@@ -131,6 +173,22 @@ export default function MarketplacePage() {
                                             <div className="font-medium text-green-600">{item.price}</div>
                                         </div>
                                     </div>
+
+                                    {currentUser && currentUser.companyId === item.companyId ? (
+                                        <button
+                                            disabled
+                                            className="w-full mt-4 bg-zinc-100 dark:bg-zinc-800 text-zinc-400 dark:text-zinc-500 py-2 rounded-lg text-sm font-medium cursor-not-allowed border border-zinc-200 dark:border-zinc-700"
+                                        >
+                                            Your Listing
+                                        </button>
+                                    ) : (
+                                        <button
+                                            onClick={() => handleBuy(item)}
+                                            className="w-full mt-4 bg-zinc-900 dark:bg-zinc-100 text-white dark:text-zinc-900 py-2 rounded-lg text-sm font-medium hover:opacity-90 transition"
+                                        >
+                                            Place Order
+                                        </button>
+                                    )}
                                 </div>
                             </div>
                         ))}
@@ -140,3 +198,10 @@ export default function MarketplacePage() {
         </div>
     );
 }
+
+// Helper function not in component, but need inside component or define inside.
+// Since I can't easily see where component starts/ends safely with Search/Replace line numbers without seeing full file context again, 
+// I will just insert handleBuy inside the component and the button in the map loop.
+// Actually, I'll do two edits or one big one. I have the file content.
+// Insert handleBuy before return.
+
