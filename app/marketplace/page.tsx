@@ -8,12 +8,16 @@ export default function MarketplacePage() {
     const [matches, setMatches] = useState<any[]>([]);
 
     // Mock initial listings
-    const listings = [
-        { id: 1, title: "Industrial Steel Scraps", quantity: "500 Tons", price: "$200/ton", seller: "MetalWorks Industries", type: "Metal" },
-        { id: 2, title: "Plastic Packaging Waste", quantity: "150 Tons", price: "$50/ton", seller: "PackIt Corp", type: "Plastic" },
-        { id: 3, title: "Organic Sludge", quantity: "1000 Liters", price: "$10/liter", seller: "BioChem Labs", type: "Organic" },
-        { id: 4, title: "Broken Glass Cullet", quantity: "50 Tons", price: "$30/ton", seller: "GlassCo", type: "Glass" },
-    ];
+    const [listings, setListings] = useState<any[]>([]);
+
+    useEffect(() => {
+        fetch("/api/listings")
+            .then(res => res.json())
+            .then(data => {
+                if (data.success) setListings(data.listings);
+            })
+            .catch(err => console.error("Failed to fetch listings", err));
+    }, []);
 
     const handleMatchmake = async (material: string) => {
         setLoading(true);

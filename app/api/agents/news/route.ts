@@ -1,38 +1,27 @@
 import { NextResponse } from 'next/server';
+import pool from '@/lib/db';
 
 export async function GET() {
-    // Mock News/Social Agent
-    // In a real app, this would fetch from an external News API or scrape RSS feeds
+    try {
+        const result = await pool.query(`
+        SELECT * FROM feed_items ORDER BY created_at DESC LIMIT 10
+    `);
 
-    const newsFeed = [
-        {
-            id: "1",
-            title: "New Regulations for Industrial Waste 2024",
-            summary: "The global council has released new guidelines for industrial by-product usage, incentivizing circular economy models.",
-            source: "Global Eco News",
-            category: "Regulation",
-            timestamp: new Date().toISOString()
-        },
-        {
-            id: "2",
-            title: "TechGiant saves $1M using Scrap Metal",
-            summary: "A leading tech manufacturer reports 40% cost reduction by sourcing raw materials from local waste exchanges.",
-            source: "Industry Weekly",
-            category: "Success Story",
-            timestamp: new Date(Date.now() - 86400000).toISOString() // 1 day ago
-        },
-        {
-            id: "3",
-            title: "Innovative Biotech for Organic Waste",
-            summary: "New enzyme discovery allows rapid composting of industrial organic sludge.",
-            source: "BioTech Today",
-            category: "Innovation",
-            timestamp: new Date(Date.now() - 172800000).toISOString() // 2 days ago
-        }
-    ];
+        const formattedFeed = result.rows.map(item => ({
+            id: item.id,
+            title: item.title,
+            summary: item.summary || item.content.substring(0, 100) + '...',
+            source: "ReGenX Network",
+            category: item.category,
+            timestamp: new Date(item.created_at).toISOString() // Ensure date format
+        }));
 
-    return NextResponse.json({
-        success: true,
-        feed: newsFeed
-    });
+        return NextResponse.json({
+            success: true,
+            feed: formattedFeed
+        });
+    } catch (error) {
+        console.error("Feed Error:", error);
+        return NextResponse.json({ success: false, error: "Failed to fetch news" }, { status: 500 });
+    }
 }
