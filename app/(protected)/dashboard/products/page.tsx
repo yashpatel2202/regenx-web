@@ -187,7 +187,7 @@ export default function ProductWorkflowsPage() {
                                                 <div className="text-sm text-zinc-500 mt-1">Est: {waste.estimated_quantity}</div>
                                             </div>
                                             <button
-                                                onClick={() => router.push(`/marketplace/create?wasteId=${waste.id}&name=${encodeURIComponent(waste.material_name)}&qty=${encodeURIComponent(waste.estimated_quantity)}`)}
+                                                onClick={() => router.push(`/marketplace/create?wasteId=${waste.id}&name=${encodeURIComponent(waste.material_name)}`)}
                                                 className="text-sm bg-white dark:bg-zinc-800 border border-zinc-300 dark:border-zinc-700 hover:bg-zinc-50 px-3 py-1.5 rounded-lg transition"
                                             >
                                                 Post to Marketplace

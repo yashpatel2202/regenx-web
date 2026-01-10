@@ -31,12 +31,16 @@ export async function POST(request: Request) {
     try {
         const body = await request.json();
 
-        // Mock company ID (select first available company)
-        const companyRes = await pool.query('SELECT id FROM companies LIMIT 1');
-        if (companyRes.rows.length === 0) {
-            return NextResponse.json({ success: false, error: "No company found to link listing" }, { status: 400 });
+        let companyId = body.companyId;
+
+        if (!companyId) {
+            // Fallback for testing if no companyId provided
+            const companyRes = await pool.query('SELECT id FROM companies LIMIT 1');
+            if (companyRes.rows.length === 0) {
+                return NextResponse.json({ success: false, error: "No company found to link listing" }, { status: 400 });
+            }
+            companyId = companyRes.rows[0].id;
         }
-        const companyId = companyRes.rows[0].id;
 
         const result = await pool.query(`
             INSERT INTO listings (company_id, title, description, quantity, unit, type, price_per_unit, status)
