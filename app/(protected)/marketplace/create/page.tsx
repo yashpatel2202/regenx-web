@@ -98,7 +98,7 @@ export default function CreateListingPage() {
                             </select>
                         </div>
                         <div>
-                            <label className="block text-sm font-medium mb-1">Price Per Unit ($)</label>
+                            <label className="block text-sm font-medium mb-1">Price Per Unit (₹)</label>
                             <input
                                 type="number" required
                                 className="w-full p-2 rounded-lg border border-zinc-200 dark:border-zinc-800 bg-transparent"

@@ -125,7 +125,7 @@ export default function OrdersPage() {
 
                             <div className="flex flex-col items-end min-w-[150px]">
                                 <div className="font-bold text-lg">{order.quantity} {order.unit || 'Units'}</div>
-                                <div className="text-sm text-zinc-500">Total: ${Number(order.total_price).toLocaleString()}</div>
+                                <div className="text-sm text-zinc-500">Total: ₹{Number(order.total_price).toLocaleString()}</div>
                             </div>
 
                             {activeTab === 'selling' && order.status === 'PENDING' && (

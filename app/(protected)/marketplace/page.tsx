@@ -49,7 +49,7 @@ export default function MarketplacePage() {
 
         // Simple confirmation
         const total = item.raw_quantity * item.raw_price;
-        if (!confirm(`Are you sure you want to place an order for ${item.title}?\n\nQuantity: ${item.quantity}\nEstimated Total: $${total.toLocaleString()}`)) {
+        if (!confirm(`Are you sure you want to place an order for ${item.title}?\n\nQuantity: ${item.quantity}\nEstimated Total: ₹${total.toLocaleString()}`)) {
             return;
         }
 

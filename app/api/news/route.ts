@@ -7,7 +7,7 @@ const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || "");
 export async function GET() {
     try {
         // 1. Fetch Real-time RSS
-        const RSS_URL = "https://news.google.com/rss/search?q=waste+management+recycling+innovation+circular+economy&hl=en-US&gl=US&ceid=US:en";
+        const RSS_URL = "https://news.google.com/rss/search?q=waste+management+recycling+innovation+circular+economy&hl=en-IN&gl=IN&ceid=IN:en";
         const response = await fetch(RSS_URL);
         const xmlText = await response.text();
 

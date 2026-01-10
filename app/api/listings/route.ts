@@ -16,7 +16,7 @@ export async function GET() {
             companyId: l.company_id, // Expose company ID for frontend check
             title: l.title,
             quantity: `${l.quantity} ${l.unit}`,
-            price: `$${l.price_per_unit}/${l.unit}`, // map snake_case from DB
+            price: `₹${l.price_per_unit}/${l.unit}`, // map snake_case from DB
             seller: l.seller_name,
             type: l.type,
             raw_quantity: l.quantity,
