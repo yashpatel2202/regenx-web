@@ -36,7 +36,8 @@ export default function OnboardingPage() {
 
             if (data.success) {
                 // Auto-login (mock)
-                localStorage.setItem("user", JSON.stringify(data.user));
+                const expiry = new Date().getTime() + 7 * 24 * 60 * 60 * 1000;
+                localStorage.setItem("user", JSON.stringify({ ...data.user, expiry }));
                 router.push("/dashboard");
             } else {
                 setError(data.error || "Registration failed");

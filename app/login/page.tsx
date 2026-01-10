@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 
@@ -9,6 +9,17 @@ export default function LoginPage() {
     const [formData, setFormData] = useState({ email: "", password: "" });
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState("");
+
+    // Auto-redirect if already logged in
+    useEffect(() => {
+        const storedUser = localStorage.getItem("user");
+        if (storedUser) {
+            const parsed = JSON.parse(storedUser);
+            if (parsed.expiry && new Date().getTime() < parsed.expiry) {
+                router.push("/dashboard");
+            }
+        }
+    }, [router]);
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -25,8 +36,10 @@ export default function LoginPage() {
             const data = await res.json();
 
             if (data.success) {
-                // Determine user context storage (mocking session)
-                localStorage.setItem("user", JSON.stringify(data.user));
+                // Determine user context storage (mocking session behavior with expiry)
+                // Set expiry to 7 days from now
+                const expiry = new Date().getTime() + 7 * 24 * 60 * 60 * 1000;
+                localStorage.setItem("user", JSON.stringify({ ...data.user, expiry }));
 
                 // Check for returnUrl
                 const params = new URLSearchParams(window.location.search);

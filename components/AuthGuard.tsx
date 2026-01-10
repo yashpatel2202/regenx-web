@@ -10,10 +10,16 @@ export default function AuthGuard({ children }: { children: React.ReactNode }) {
     useEffect(() => {
         const user = localStorage.getItem("user");
         if (!user) {
-            // Redirect to login, preserving return URL
-            router.push(`/login`);
+            router.push(`/login?returnUrl=${encodeURIComponent(pathname)}`);
         } else {
-            setAuthorized(true);
+            // Check expiry
+            const parsed = JSON.parse(user);
+            if (parsed.expiry && new Date().getTime() > parsed.expiry) {
+                localStorage.removeItem("user");
+                router.push(`/login?returnUrl=${encodeURIComponent(pathname)}`);
+            } else {
+                setAuthorized(true);
+            }
         }
     }, [router, pathname]);
 

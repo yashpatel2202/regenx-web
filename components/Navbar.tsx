@@ -59,6 +59,15 @@ export default function Navbar() {
                     })}
                 </nav>
                 <div className="ml-auto flex items-center gap-4">
+                    <button
+                        onClick={() => {
+                            localStorage.removeItem("user");
+                            window.location.href = "/login";
+                        }}
+                        className="text-sm text-zinc-500 hover:text-red-500 transition"
+                    >
+                        Sign Out
+                    </button>
                     <div className="h-8 w-8 rounded-full bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center">
                         <span className="text-xs font-medium">CO</span>
                     </div>
