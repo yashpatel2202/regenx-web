@@ -85,7 +85,7 @@ export async function GET(request: Request) {
 
 
             try {
-                const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash", generationConfig: { responseMimeType: "application/json" } });
+                const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash", generationConfig: { responseMimeType: "application/json" } });
                 const prompt = `
                 You are the sustainability engine for ReGenX.
                 Generate a single sentence daily specific sustainability insight/tip for the dashboard.

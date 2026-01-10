@@ -11,7 +11,7 @@ export async function POST(request: Request) {
             return NextResponse.json({ success: false, error: "GEMINI_API_KEY is missing." }, { status: 500 });
         }
 
-        const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+        const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
 
         const prompt = `
             You are a Sustainable Process Engineer. 
