@@ -57,7 +57,29 @@ export default function DashboardPage() {
         }
     };
 
-    if (loadingStats) return <div className="p-8">Loading dashboard...</div>;
+    if (loadingStats) return (
+        <div className="p-8 max-w-7xl mx-auto space-y-8 animate-pulse">
+            <div className="space-y-2">
+                <div className="h-8 w-48 bg-zinc-200 dark:bg-zinc-800 rounded-lg" />
+                <div className="h-4 w-96 bg-zinc-200 dark:bg-zinc-800 rounded" />
+            </div>
+
+            {/* AI Insight Skeleton */}
+            <div className="h-24 bg-zinc-200 dark:bg-zinc-800 rounded-xl" />
+
+            {/* Stats Grid Skeleton */}
+            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+                {[1, 2, 3].map((i) => (
+                    <div key={i} className="h-32 bg-zinc-200 dark:bg-zinc-800 rounded-xl" />
+                ))}
+            </div>
+
+            <div className="grid gap-8 lg:grid-cols-2">
+                <div className="h-96 bg-zinc-200 dark:bg-zinc-800 rounded-xl" />
+                <div className="h-96 bg-zinc-200 dark:bg-zinc-800 rounded-xl" />
+            </div>
+        </div>
+    );
 
     return (
         <div className="p-8 max-w-7xl mx-auto space-y-8">

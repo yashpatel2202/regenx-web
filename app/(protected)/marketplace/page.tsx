@@ -9,6 +9,7 @@ export default function MarketplacePage() {
 
     // Mock initial listings
     const [listings, setListings] = useState<any[]>([]);
+    const [loadingListings, setLoadingListings] = useState(true);
     const [currentUser, setCurrentUser] = useState<any>(null);
 
     useEffect(() => {
@@ -21,7 +22,8 @@ export default function MarketplacePage() {
             .then(data => {
                 if (data.success) setListings(data.listings);
             })
-            .catch(err => console.error("Failed to fetch listings", err));
+            .catch(err => console.error("Failed to fetch listings", err))
+            .finally(() => setLoadingListings(false));
     }, []);
 
     const handleMatchmake = async (material: string) => {
@@ -130,7 +132,23 @@ export default function MarketplacePage() {
 
                 {/* Grid or Match Results */}
                 <div className="lg:col-span-3 space-y-6">
-                    {matches.length > 0 && (
+                    {loading ? (
+                        // Reuse loading for matchmaker or add specific state?
+                        // The prompt asked for "shimmer same as news".
+                        // I will interpret "loading" here as the matchmaker loading since that variable exists.
+                        // But for *initial* load, I lack a variable in the viewed file.
+                        // Let's stick to modifying what I see.
+                        // Wait, I can see `loading` is used for `handleMatchmake`.
+                        // Let's render skeletons when `loading` is true for matches.
+                        <div className="mb-8 p-4 bg-green-50 dark:bg-green-900/10 rounded-xl border border-green-100 dark:border-green-900/30">
+                            <h3 className="font-semibold text-green-800 dark:text-green-400 mb-4">AI Recommendations</h3>
+                            <div className="grid gap-4 md:grid-cols-2 animate-pulse">
+                                {[1, 2].map(i => (
+                                    <div key={i} className="bg-white dark:bg-zinc-900 h-32 rounded-lg" />
+                                ))}
+                            </div>
+                        </div>
+                    ) : matches.length > 0 && (
                         <div className="mb-8 p-4 bg-green-50 dark:bg-green-900/10 rounded-xl border border-green-100 dark:border-green-900/30">
                             <div className="flex justify-between items-center mb-4">
                                 <h3 className="font-semibold text-green-800 dark:text-green-400">AI Recommendations</h3>
@@ -149,50 +167,68 @@ export default function MarketplacePage() {
                         </div>
                     )}
 
-                    <div className="grid sm:grid-cols-2 gap-4">
-                        {listings.map((item) => (
-                            <div key={item.id} className="group overflow-hidden rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 transition-all hover:border-green-500/50 hover:shadow-md">
-                                <div className="h-32 bg-zinc-100 dark:bg-zinc-900/50 flex items-center justify-center text-zinc-400">
-                                    {/* Placeholder Image */}
-                                    <span className="text-4xl opacity-20 font-bold">{item.type[0]}</span>
-                                </div>
-                                <div className="p-4">
-                                    <div className="flex justify-between items-start">
-                                        <h3 className="font-semibold text-lg truncate pr-2">{item.title}</h3>
-                                        <span className="text-xs font-medium px-2 py-1 bg-zinc-100 dark:bg-zinc-900 rounded-full">{item.type}</span>
-                                    </div>
-                                    <p className="text-zinc-500 text-sm mt-1">{item.seller}</p>
-
-                                    <div className="mt-4 flex items-center justify-between">
-                                        <div>
-                                            <div className="text-xs text-zinc-400">Quantity</div>
-                                            <div className="font-medium">{item.quantity}</div>
-                                        </div>
-                                        <div>
-                                            <div className="text-xs text-zinc-400 text-right">Price</div>
-                                            <div className="font-medium text-green-600">{item.price}</div>
+                    {loadingListings ? (
+                        <div className="grid sm:grid-cols-2 gap-4 animate-pulse">
+                            {[1, 2, 3, 4, 5, 6].map(i => (
+                                <div key={i} className="rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 h-[300px]">
+                                    <div className="h-32 bg-zinc-200 dark:bg-zinc-800 rounded-t-xl" />
+                                    <div className="p-4 space-y-4">
+                                        <div className="h-6 w-3/4 bg-zinc-200 dark:bg-zinc-800 rounded" />
+                                        <div className="h-4 w-1/2 bg-zinc-200 dark:bg-zinc-800 rounded" />
+                                        <div className="flex justify-between pt-4">
+                                            <div className="h-10 w-24 bg-zinc-200 dark:bg-zinc-800 rounded" />
+                                            <div className="h-10 w-24 bg-zinc-200 dark:bg-zinc-800 rounded" />
                                         </div>
                                     </div>
-
-                                    {currentUser && currentUser.companyId === item.companyId ? (
-                                        <button
-                                            disabled
-                                            className="w-full mt-4 bg-zinc-100 dark:bg-zinc-800 text-zinc-400 dark:text-zinc-500 py-2 rounded-lg text-sm font-medium cursor-not-allowed border border-zinc-200 dark:border-zinc-700"
-                                        >
-                                            Your Listing
-                                        </button>
-                                    ) : (
-                                        <button
-                                            onClick={() => handleBuy(item)}
-                                            className="w-full mt-4 bg-zinc-900 dark:bg-zinc-100 text-white dark:text-zinc-900 py-2 rounded-lg text-sm font-medium hover:opacity-90 transition"
-                                        >
-                                            Place Order
-                                        </button>
-                                    )}
                                 </div>
-                            </div>
-                        ))}
-                    </div>
+                            ))}
+                        </div>
+                    ) : (
+                        <div className="grid sm:grid-cols-2 gap-4">
+                            {listings.map((item) => (
+                                <div key={item.id} className="group overflow-hidden rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 transition-all hover:border-green-500/50 hover:shadow-md">
+                                    <div className="h-32 bg-zinc-100 dark:bg-zinc-900/50 flex items-center justify-center text-zinc-400">
+                                        {/* Placeholder Image */}
+                                        <span className="text-4xl opacity-20 font-bold">{item.type[0]}</span>
+                                    </div>
+                                    <div className="p-4">
+                                        <div className="flex justify-between items-start">
+                                            <h3 className="font-semibold text-lg truncate pr-2">{item.title}</h3>
+                                            <span className="text-xs font-medium px-2 py-1 bg-zinc-100 dark:bg-zinc-900 rounded-full">{item.type}</span>
+                                        </div>
+                                        <p className="text-zinc-500 text-sm mt-1">{item.seller}</p>
+
+                                        <div className="mt-4 flex items-center justify-between">
+                                            <div>
+                                                <div className="text-xs text-zinc-400">Quantity</div>
+                                                <div className="font-medium">{item.quantity}</div>
+                                            </div>
+                                            <div>
+                                                <div className="text-xs text-zinc-400 text-right">Price</div>
+                                                <div className="font-medium text-green-600">{item.price}</div>
+                                            </div>
+                                        </div>
+
+                                        {currentUser && currentUser.companyId === item.companyId ? (
+                                            <button
+                                                disabled
+                                                className="w-full mt-4 bg-zinc-100 dark:bg-zinc-800 text-zinc-400 dark:text-zinc-500 py-2 rounded-lg text-sm font-medium cursor-not-allowed border border-zinc-200 dark:border-zinc-700"
+                                            >
+                                                Your Listing
+                                            </button>
+                                        ) : (
+                                            <button
+                                                onClick={() => handleBuy(item)}
+                                                className="w-full mt-4 bg-zinc-900 dark:bg-zinc-100 text-white dark:text-zinc-900 py-2 rounded-lg text-sm font-medium hover:opacity-90 transition"
+                                            >
+                                                Place Order
+                                            </button>
+                                        )}
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    )}
                 </div>
             </div>
         </div>

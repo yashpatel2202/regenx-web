@@ -127,7 +127,21 @@ export default function ProductDetailPage() {
         }
     };
 
-    if (loading) return <div className="p-8">Loading...</div>;
+    if (loading) return (
+        <div className="p-8 max-w-7xl mx-auto space-y-8 animate-pulse">
+            <div className="h-6 w-24 bg-zinc-200 dark:bg-zinc-800 rounded mb-6" />
+
+            <div className="h-48 bg-zinc-200 dark:bg-zinc-800 rounded-xl" />
+
+            <div className="h-32 bg-zinc-200 dark:bg-zinc-800 rounded-lg" />
+
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {[1, 2, 3].map(i => (
+                    <div key={i} className="h-64 bg-zinc-200 dark:bg-zinc-800 rounded-xl" />
+                ))}
+            </div>
+        </div>
+    );
     if (!product) return <div className="p-8">Product not found</div>;
 
     return (

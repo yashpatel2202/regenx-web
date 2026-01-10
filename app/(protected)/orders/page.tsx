@@ -96,7 +96,11 @@ export default function OrdersPage() {
             </div>
 
             {loading ? (
-                <div className="text-center py-12 text-zinc-500">Loading orders...</div>
+                <div className="space-y-4 animate-pulse">
+                    {[1, 2, 3, 4].map((i) => (
+                        <div key={i} className="bg-zinc-100 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-xl p-6 h-32" />
+                    ))}
+                </div>
             ) : orders.length === 0 ? (
                 <div className="text-center py-12 bg-zinc-50 dark:bg-zinc-900 rounded-xl border border-dashed border-zinc-200 dark:border-zinc-800 text-zinc-500">
                     No orders found in this section.
