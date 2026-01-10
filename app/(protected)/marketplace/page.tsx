@@ -142,7 +142,7 @@ export default function MarketplacePage() {
                                         <div className="font-semibold">{match.companyName}</div>
                                         <div className="text-sm text-zinc-500">{match.industry}</div>
                                         <div className="mt-2 text-xs text-zinc-400">Match Score: <span className="text-green-600 font-bold">{match.matchScore * 100}%</span></div>
-                                        <p className="mt-2 text-sm italic">"{match.reason}"</p>
+                                        <p className="mt-2 text-sm italic">&quot;{match.reason}&quot;</p>
                                     </div>
                                 ))}
                             </div>

@@ -12,7 +12,7 @@ export async function GET(request: Request) {
 
     try {
         let query = '';
-        let params = [companyId];
+        const params = [companyId];
 
         if (type === 'buying') {
             // My Orders: Orders primarily where I am the buyer

@@ -1,68 +1,60 @@
 import { NextResponse } from 'next/server';
+import { GoogleGenerativeAI } from "@google/generative-ai";
+
+const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || "");
 
 export async function POST(request: Request) {
   try {
     const { workflowDescription } = await request.json();
 
-    // Mock AI Logic: Simple keyword extraction to identify potential waste
-    // In a real scenario, this would call an LLM.
-
-    const potentialWaste = [];
-    const descriptionLower = workflowDescription.toLowerCase();
-
-    if (descriptionLower.includes('metal') || descriptionLower.includes('steel')) {
-      potentialWaste.push({
-        material: 'Scrap Metal',
-        confidence: 0.95,
-        estimatedQuantity: '100-500 kg/month',
-        stage: 'Cutting / Fabrication',
-        suggestedUses: ['Construction Support', 'Recycling'],
-      });
+    if (!process.env.GEMINI_API_KEY) {
+      console.warn("GEMINI_API_KEY not set.");
+      return NextResponse.json({ success: false, error: "GEMINI_API_KEY is missing in server environment." }, { status: 500 });
     }
 
-    if (descriptionLower.includes('plastic') || descriptionLower.includes('packaging')) {
-      potentialWaste.push({
-        material: 'Plastic Extracts',
-        confidence: 0.88,
-        estimatedQuantity: '50-200 kg/month',
-        stage: 'Sorting line',
-        suggestedUses: ['Plastic Pellets', 'Insulation'],
-      });
-    }
+    const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
 
-    if (descriptionLower.includes('organic') || descriptionLower.includes('food')) {
-      potentialWaste.push({
-        material: 'Organic Compost',
-        confidence: 0.92,
-        estimatedQuantity: '200-1000 kg/month',
-        stage: 'Decomposition',
-        suggestedUses: ['Fertilizer', 'Biogas'],
-      });
-    }
+    const prompt = `
+      You are an expert industrial waste auditor. Analyze the following product workflow description and identify potential waste outputs (by-products).
+      
+      Workflow Description: "${workflowDescription}"
+      
+      Return a JSON object with the following structure:
+      {
+        "identifiedWaste": [
+          {
+            "material": "Name of material (e.g. Scrap Metal)",
+            "confidence": 0.0 to 1.0,
+            "estimatedQuantity": "Estimated quantity string (e.g. 100 kg/month)",
+            "stage": "Stage of production where it is generated",
+            "suggestedUses": ["Use 1", "Use 2"]
+          }
+        ],
+        "efficiencyScore": 0-100,
+        "optimizationSuggestions": "One sentence suggestion."
+      }
+      
+      Do not include markdown formatting (like \`\`\`json). Just the raw JSON string.
+    `;
 
-    if (potentialWaste.length === 0) {
-      // Default fallback
-      potentialWaste.push({
-        material: 'General Industrial Waste',
-        confidence: 0.5,
-        estimatedQuantity: 'Variable',
-        stage: 'Final Assembly',
-        suggestedUses: ['Energy Recovery'],
-      });
-    }
+    const result = await model.generateContent(prompt);
+    const response = await result.response;
+    const text = response.text();
+
+    // Clean up if markdown is invoked
+    const cleanedText = text.replace(/```json/g, '').replace(/```/g, '').trim();
+
+    const analysis = JSON.parse(cleanedText);
 
     return NextResponse.json({
       success: true,
-      analysis: {
-        identifiedWaste: potentialWaste,
-        efficiencyScore: 78, // Mocked score
-        optimizationSuggestions: "Consider separating liquid waste to improve recyclability."
-      }
+      analysis: analysis
     });
 
   } catch (error) {
+    console.error("Gemini Workflow Error:", error);
     return NextResponse.json(
-      { success: false, error: 'Failed to parse workflow' },
+      { success: false, error: 'Failed to analyze workflow with AI' },
       { status: 500 }
     );
   }
