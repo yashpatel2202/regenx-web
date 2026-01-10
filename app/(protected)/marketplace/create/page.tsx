@@ -5,13 +5,15 @@ import { useRouter } from "next/navigation";
 
 export default function CreateListingPage() {
     const router = useRouter();
+    const searchParams = typeof window !== 'undefined' ? new URLSearchParams(window.location.search) : null;
+
     const [formData, setFormData] = useState({
-        title: "",
-        type: "Metal",
-        quantity: "",
+        title: searchParams?.get('name') || "",
+        type: "Metal", // Could infer from title but default for now
+        quantity: searchParams?.get('qty')?.replace(/[^0-9.]/g, '') || "",
         unit: "Tons",
         price: "",
-        description: "",
+        description: searchParams?.get('wasteId') ? "Generated from Waste Stream catalog." : "",
     });
     const [loading, setLoading] = useState(false);
 

@@ -31,6 +31,7 @@ export default function Navbar() {
 
     const navItems = [
         { name: "Dashboard", href: "/dashboard", icon: Icons.LayoutDashboard },
+        { name: "Products", href: "/dashboard/products", icon: Icons.Recycle },
         { name: "Marketplace", href: "/marketplace", icon: Icons.ShoppingBag },
         { name: "Feed", href: "/feed", icon: Icons.Newspaper },
     ];

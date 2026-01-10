@@ -41,7 +41,10 @@ export default function MarketplacePage() {
                     <h1 className="text-3xl font-bold tracking-tight">Marketplace</h1>
                     <p className="text-zinc-500 dark:text-zinc-400">Buy and sell industrial by-products.</p>
                 </div>
-                <button className="bg-zinc-900 dark:bg-zinc-50 text-white dark:text-zinc-900 px-4 py-2 rounded-lg font-medium">
+                <button
+                    onClick={() => window.location.href = '/marketplace/create'}
+                    className="bg-zinc-900 dark:bg-zinc-50 text-white dark:text-zinc-900 px-4 py-2 rounded-lg font-medium hover:opacity-90 transition"
+                >
                     Create Listing
                 </button>
             </div>

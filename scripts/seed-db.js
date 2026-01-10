@@ -32,6 +32,23 @@ async function seedDb() {
         const compMetal = companies.find(c => c.name === 'MetalWorks Industries');
         const compGreen = companies.find(c => c.name === 'GreenEnergy Corp');
 
+        // Create Users
+        await pool.query(`
+            INSERT INTO users (email, password_hash, name, company_id)
+            VALUES 
+                ('admin@ecobuild.com', 'password', 'Admin User', $1),
+                ('manager@metalworks.com', 'password', 'Manager', $2)
+        `, [compEco.id, compMetal.id]);
+
+        // Create Products (Workflows)
+        const productRes = await pool.query(`
+            INSERT INTO products (company_id, name, description, workflow_document_text)
+            VALUES 
+                ($1, 'Steel Pipes Manufacturing', 'Process of cutting and welding steel pipes.', 'Raw steel enters, cut to size. Metal scraps generated. Welding uses argon gas.'),
+                ($2, 'Concrete Blocks', 'Mixing cement and aggregates.', 'Cement mixed with crushed stone. Molds used. Excess rubble generated.')
+            RETURNING id, name;
+        `, [compMetal.id, compEco.id]);
+
         // Create Listings
         await pool.query(`
             INSERT INTO listings (company_id, title, description, quantity, unit, type, price_per_unit, status)
