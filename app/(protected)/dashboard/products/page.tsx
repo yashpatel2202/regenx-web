@@ -20,11 +20,6 @@ export default function ProductWorkflowsPage() {
     const [analysisResult, setAnalysisResult] = useState<any>(null);
     const [selectedWasteItems, setSelectedWasteItems] = useState<any[]>([]);
 
-    // Waste View State
-    const [viewingProduct, setViewingProduct] = useState<any>(null);
-    const [wasteStreams, setWasteStreams] = useState<any[]>([]);
-    const [loadingWaste, setLoadingWaste] = useState(false);
-
     useEffect(() => {
         // Mock Auth check
         const storedUser = localStorage.getItem("user");
@@ -51,21 +46,7 @@ export default function ProductWorkflowsPage() {
         }
     };
 
-    const fetchWasteStreams = async (productId: string) => {
-        setLoadingWaste(true);
-        try {
-            const res = await fetch(`/api/products/waste?productId=${productId}`);
-            const data = await res.json();
-            if (data.success) {
-                setWasteStreams(data.wasteStreams);
-                setViewingProduct(products.find(p => p.id === productId));
-            }
-        } catch (error) {
-            console.error(error);
-        } finally {
-            setLoadingWaste(false);
-        }
-    };
+
 
     const handleAnalyze = async () => {
         if (!formData.workflowText) return;
@@ -130,6 +111,18 @@ export default function ProductWorkflowsPage() {
                     });
                 }
 
+                // 3. Save Identified Input Components (if analyzed)
+                if (analysisResult?.requiredInputs && analysisResult.requiredInputs.length > 0) {
+                    await fetch("/api/products/components", {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({
+                            productId: newProductId,
+                            components: analysisResult.requiredInputs
+                        }),
+                    });
+                }
+
                 setShowForm(false);
                 setFormData({ name: "", description: "", workflowText: "" });
                 setAnalysisResult(null);
@@ -150,7 +143,7 @@ export default function ProductWorkflowsPage() {
                     <h1 className="text-3xl font-bold">Product Workflows</h1>
                     <p className="text-zinc-500">Manage manufacturing processes and identify waste streams.</p>
                 </div>
-                {!showForm && !viewingProduct && (
+                {!showForm && (
                     <button
                         onClick={() => setShowForm(true)}
                         className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700"
@@ -159,51 +152,6 @@ export default function ProductWorkflowsPage() {
                     </button>
                 )}
             </div>
-
-            {/* View Waste Streams Modal/Panel */}
-            {viewingProduct && (
-                <div className="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-xl p-6 mb-8 shadow-sm">
-                    <div className="flex justify-between items-start mb-6">
-                        <div>
-                            <h2 className="text-xl font-semibold">{viewingProduct.name}: Waste Catalog</h2>
-                            <p className="text-sm text-zinc-500">{viewingProduct.description}</p>
-                        </div>
-                        <button onClick={() => setViewingProduct(null)} className="text-sm text-zinc-500 hover:text-zinc-700">Close</button>
-                    </div>
-
-                    {loadingWaste ? (
-                        <div className="p-4 text-center">Loading catalog...</div>
-                    ) : (
-                        <div className="space-y-4">
-                            {wasteStreams.length > 0 ? (
-                                <div className="grid gap-4">
-                                    {wasteStreams.map((waste) => (
-                                        <div key={waste.id} className="border border-zinc-200 dark:border-zinc-800 p-4 rounded-lg flex justify-between items-center bg-zinc-50 dark:bg-zinc-800/50">
-                                            <div>
-                                                <div className="flex items-center gap-2">
-                                                    <span className="font-bold">{waste.material_name}</span>
-                                                    <span className="text-xs bg-purple-100 text-purple-700 px-2 py-0.5 rounded-full">{waste.stage || 'General'}</span>
-                                                </div>
-                                                <div className="text-sm text-zinc-500 mt-1">Est: {waste.estimated_quantity}</div>
-                                            </div>
-                                            <button
-                                                onClick={() => router.push(`/marketplace/create?wasteId=${waste.id}&name=${encodeURIComponent(waste.material_name)}`)}
-                                                className="text-sm bg-white dark:bg-zinc-800 border border-zinc-300 dark:border-zinc-700 hover:bg-zinc-50 px-3 py-1.5 rounded-lg transition"
-                                            >
-                                                Post to Marketplace
-                                            </button>
-                                        </div>
-                                    ))}
-                                </div>
-                            ) : (
-                                <div className="text-center py-8 text-zinc-500 border border-dashed border-zinc-200 rounded-lg">
-                                    No waste streams identified yet.
-                                </div>
-                            )}
-                        </div>
-                    )}
-                </div>
-            )}
 
             {/* Add Workflow Form */}
             {showForm && (
@@ -262,6 +210,19 @@ export default function ProductWorkflowsPage() {
                                 <h3 className="font-bold text-purple-700 dark:text-purple-400 mb-2">Analysis Results</h3>
                                 <p className="text-sm mb-4">{analysisResult.optimizationSuggestions}</p>
 
+                                {analysisResult.requiredInputs && analysisResult.requiredInputs.length > 0 && (
+                                    <div className="mb-4">
+                                        <h4 className="text-sm font-bold mb-2">Identified Required Inputs:</h4>
+                                        <div className="flex flex-wrap gap-2">
+                                            {analysisResult.requiredInputs.map((input: any, i: number) => (
+                                                <span key={i} className="text-xs bg-amber-100 text-amber-800 px-2 py-1 rounded-md border border-amber-200">
+                                                    {input.material}
+                                                </span>
+                                            ))}
+                                        </div>
+                                    </div>
+                                )}
+
                                 <h4 className="text-sm font-bold mb-2">Select Waste Items to Catalog:</h4>
                                 <div className="space-y-2">
                                     {analysisResult.identifiedWaste.map((w: any, idx: number) => (
@@ -307,7 +268,7 @@ export default function ProductWorkflowsPage() {
             )}
 
             {/* Product List */}
-            <div className={`grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 ${viewingProduct || showForm ? 'opacity-50 pointer-events-none' : ''}`}>
+            <div className={`grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 ${showForm ? 'opacity-50 pointer-events-none' : ''}`}>
                 {products.map((product) => (
                     <div key={product.id} className="bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 p-6 rounded-xl hover:shadow-md transition flex flex-col h-full">
                         <h3 className="text-lg font-bold mb-2">{product.name}</h3>
@@ -315,12 +276,19 @@ export default function ProductWorkflowsPage() {
 
                         <div className="mt-4 pt-4 border-t border-zinc-100 dark:border-zinc-800 flex justify-between items-center">
                             <span className="text-xs text-zinc-400">{new Date(product.created_at).toLocaleDateString()}</span>
-                            <button
-                                onClick={() => fetchWasteStreams(product.id)}
-                                className="text-sm text-green-600 hover:text-green-700 font-medium flex items-center gap-1"
-                            >
-                                View Waste Stream →
-                            </button>
+                            <div className="flex gap-3">
+                                {product.matchCount > 0 && (
+                                    <span className="flex items-center gap-1 text-xs text-amber-600 bg-amber-50 px-2 py-1 rounded-full border border-amber-200">
+                                        ⚡ {product.matchCount} Inputs Available
+                                    </span>
+                                )}
+                                <button
+                                    onClick={() => router.push(`/dashboard/products/${product.id}`)}
+                                    className="text-sm text-green-600 hover:text-green-700 font-medium flex items-center gap-1"
+                                >
+                                    View Details →
+                                </button>
+                            </div>
                         </div>
                     </div>
                 ))}

@@ -26,9 +26,15 @@ export async function POST(request: Request) {
             "material": "Name of material (e.g. Scrap Metal)",
             "confidence": 0.0 to 1.0,
             "estimatedQuantity": "Estimated quantity string (e.g. 100 kg/month)",
-            "stage": "Stage of production where it is generated",
+            "stage": "Stage of production",
             "suggestedUses": ["Use 1", "Use 2"]
           }
+        ],
+        "requiredInputs": [
+            {
+                "material": "Name of input material (e.g. Raw Steel)",
+                "estimatedQuantity": "Estimated quantity"
+            }
         ],
         "efficiencyScore": 0-100,
         "optimizationSuggestions": "One sentence suggestion."
