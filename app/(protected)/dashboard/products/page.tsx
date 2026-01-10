@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
+import { Zap, ChevronRight } from "lucide-react";
 
 export default function ProductWorkflowsPage() {
     const router = useRouter();
@@ -133,7 +134,22 @@ export default function ProductWorkflowsPage() {
         }
     };
 
-    if (loading) return <div className="p-8">Loading...</div>;
+    if (loading) return (
+        <div className="p-8 max-w-7xl mx-auto space-y-8 animate-pulse">
+            <div className="flex justify-between items-center mb-8">
+                <div className="space-y-2">
+                    <div className="h-8 w-48 bg-zinc-200 dark:bg-zinc-800 rounded-lg" />
+                    <div className="h-4 w-96 bg-zinc-200 dark:bg-zinc-800 rounded" />
+                </div>
+                <div className="h-10 w-48 bg-zinc-200 dark:bg-zinc-800 rounded-lg" />
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {[1, 2, 3].map(i => (
+                    <div key={i} className="h-64 bg-zinc-200 dark:bg-zinc-800 rounded-xl" />
+                ))}
+            </div>
+        </div>
+    );
 
     return (
         <div className="p-8 max-w-7xl mx-auto">
@@ -279,14 +295,14 @@ export default function ProductWorkflowsPage() {
                             <div className="flex gap-3">
                                 {product.matchCount > 0 && (
                                     <span className="flex items-center gap-1 text-xs text-amber-600 bg-amber-50 px-2 py-1 rounded-full border border-amber-200">
-                                        ⚡ {product.matchCount} Inputs Available
+                                        <Zap className="w-3 h-3" /> {product.matchCount} Inputs Available
                                     </span>
                                 )}
                                 <button
                                     onClick={() => router.push(`/dashboard/products/${product.id}`)}
                                     className="text-sm text-green-600 hover:text-green-700 font-medium flex items-center gap-1"
                                 >
-                                    View Details →
+                                    View Details <ChevronRight className="w-4 h-4" />
                                 </button>
                             </div>
                         </div>
