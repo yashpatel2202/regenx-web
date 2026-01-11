@@ -1,4 +1,5 @@
-# ReGenX - Circular Economy Platform ♻️
+# ReGenX
+### Industrial waste utilisation system
 
 ReGenX is an intelligent B2B platform designed to power the circular economy. By treating one industry's waste as another's raw material, ReGenX connects manufacturers to facilitate the trading of industrial by-products, reducing waste and creating new revenue streams.
 
