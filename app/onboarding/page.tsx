@@ -1,3 +1,9 @@
+/**
+ * @fileoverview Onboarding/Registration Page
+ * @description Handles creation of new Company and Admin User entities.
+ * Collects industry details, company metadata, and user credentials.
+ * Creates authenticated session upon successful registration.
+ */
 "use client";
 
 import { useState } from "react";

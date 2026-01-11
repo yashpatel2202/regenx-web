@@ -1,3 +1,8 @@
+/**
+ * @fileoverview Create Listing Page
+ * @description Form to post new materials to the marketplace.
+ * Can be pre-filled with data from the Workflow Waste Catalog for seamless integration.
+ */
 "use client";
 
 import { useState, useEffect } from "react";

@@ -1,6 +1,15 @@
+/**
+ * @fileoverview Marketplace Page
+ * @description The trading hub for industrial waste and by-products.
+ * Features:
+ * - Listing discovery grid.
+ * - AI Matchmaking Agent: Finds relevant companies based on material needs.
+ * - Filtering and Search capability.
+ */
 "use client";
 
 import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 
 export default function MarketplacePage() {
     const [materialFilter, setMaterialFilter] = useState("");

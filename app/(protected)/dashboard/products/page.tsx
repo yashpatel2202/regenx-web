@@ -1,3 +1,9 @@
+/**
+ * @fileoverview Product Workflows Management Page
+ * @description Allows manufacturers to document their production processes.
+ * Features an AI Agent that analyzes text descriptions to automatically identify 
+ * waste streams and required inputs, effectively creating a "digital twin" of the process.
+ */
 "use client";
 
 import { useState, useEffect } from "react";

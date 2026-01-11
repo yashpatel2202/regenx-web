@@ -1,3 +1,10 @@
+/**
+ * @fileoverview News Analysis Page
+ * @description Provides deep-dive AI analysis of a specific news article.
+ * - Summarizes key points.
+ * - Identifies strategic opportunities for the user's specific business.
+ * - Matches news context to the user's cataloged waste streams.
+ */
 "use client";
 
 import { useState, useEffect } from "react";
