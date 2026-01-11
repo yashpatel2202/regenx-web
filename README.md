@@ -1,3 +1,7 @@
+<p align="center">
+<img src="https://raw.githubusercontent.com/yashpatel2202/regenx-web/main/regenx_banner.jpg" alt="ReGenX" />
+</p>
+
 # ReGenX
 ### Industrial waste utilisation system
 
