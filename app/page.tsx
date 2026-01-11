@@ -1,3 +1,9 @@
+/**
+ * @fileoverview Landing Page
+ * @description The main entry point for the ReGenX application.
+ * Displays value proposition and provides access to Login/Signup.
+ * Redirects authenticated users directly to the Dashboard.
+ */
 "use client";
 
 import Link from "next/link";

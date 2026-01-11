@@ -1,3 +1,9 @@
+/**
+ * @fileoverview Main Dashboard Page
+ * @description The central hub for the user. Displays key metrics (Revenue, Waste Counts),
+ * provides access to the AI Workflow Analyzer, and shows recent activity.
+ * Also features a daily AI-generated insight banner.
+ */
 "use client";
 
 import { useState, useEffect } from "react";

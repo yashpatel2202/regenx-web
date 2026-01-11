@@ -1,3 +1,10 @@
+/**
+ * @fileoverview Product Detail & Optimization Page
+ * @description Displays deep insights into a specific production workflow.
+ * Shows identified waste streams and input requirements.
+ * Connects to the Marketplace to find matches for inputs.
+ * Uses AI to "Suggest Alternate Workflows" making the process more circular/sustainable.
+ */
 "use client";
 
 import { useState, useEffect } from "react";

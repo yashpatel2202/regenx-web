@@ -1,7 +1,14 @@
+/**
+ * @fileoverview Global News Feed Page
+ * @description Fetches real-time industrial sustainability news from Google News RSS.
+ * Filters for keywords like Innovation, Regulation, and Market trends.
+ * Implements runtime fetching without scheduled tasks.
+ */
 "use client";
 
+import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { useEffect, useState } from "react";
 
 export default function FeedPage() {
     const [news, setNews] = useState<any[]>([]);

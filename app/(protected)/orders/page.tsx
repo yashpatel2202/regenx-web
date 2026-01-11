@@ -1,3 +1,9 @@
+/**
+ * @fileoverview Order Management Page
+ * @description Tracks buy and sell orders.
+ * - Buying Tab: Status of purchases made by the user.
+ * - Selling Tab: Incoming purchase requests that can be Approved/Rejected.
+ */
 "use client";
 
 import { useState, useEffect } from "react";

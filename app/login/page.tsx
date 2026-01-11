@@ -1,3 +1,9 @@
+/**
+ * @fileoverview Login Page
+ * @description Handles user authentication and session creation.
+ * Checks for existing sessions and redirects if valid.
+ * Stores user context in localStorage with expiry.
+ */
 "use client";
 
 import { useState, useEffect } from "react";
